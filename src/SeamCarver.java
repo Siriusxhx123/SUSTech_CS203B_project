@@ -1,5 +1,7 @@
 import edu.princeton.cs.algs4.Picture;
 
+import java.awt.*;
+
 public class SeamCarver {
 
     // create a seam carver object based on the given picture
@@ -27,36 +29,34 @@ public class SeamCarver {
     // energy of pixel at column x and row y
     public double energy(int x, int y) {
         if (x == 0 || y == 0 || x == width() - 1 || y == height() - 1) {
-            return 1000; // 处理边缘情况，返回固定的边缘能量值
+            return 1000.00; // 处理边缘情况，返回固定的边缘能量值
         }
 
-        int rgb = picture.getRGB(x, y);
-        int r = (rgb >> 16) & 0xFF;
-        int g = (rgb >> 8) & 0xFF;
-        int b = rgb & 0xFF;
+        double rx = (picture.getRGB(x + 1, y) >> 16) & 0xFF;
+        double gx = (picture.getRGB(x + 1, y) >> 8) & 0xFF;
+        double bx = picture.getRGB(x + 1, y) & 0xFF;
 
-        int rx = picture.getRGB(Math.min(x + 1, width() - 1), y);
-        int gx = picture.getRGB(Math.min(x + 1, width() - 1), y);
-        int bx = picture.getRGB(Math.min(x + 1, width() - 1), y);
+        double deltaxR = rx - ((picture.getRGB(x - 1, y) >> 16) & 0xFF);
+        double deltaxG = gx - ((picture.getRGB(x - 1, y) >> 8) & 0xFF);
+        double deltaxB = bx - (picture.getRGB(x - 1, y) & 0xFF);
 
-        int deltaxR = ((rx >> 16) & 0xFF) - r;
-        int deltaxG = ((gx >> 8) & 0xFF) - g;
-        int deltaxB = (bx & 0xFF) - b;
+        double deltaxSquared = deltaxR * deltaxR + deltaxG * deltaxG + deltaxB * deltaxB;
 
-        int deltaxSquared = deltaxR * deltaxR + deltaxG * deltaxG + deltaxB * deltaxB;
+        double ry = (picture.getRGB(x, y + 1) >> 16) & 0xFF;
+        double gy = (picture.getRGB(x, y + 1) >> 8) & 0xFF;
+        double by = picture.getRGB(x, y + 1) & 0xFF;
 
-        int ry = picture.getRGB(x, Math.min(y + 1, height() - 1));
-        int gy = picture.getRGB(x, Math.min(y + 1, height() - 1));
-        int by = picture.getRGB(x, Math.min(y + 1, height() - 1));
+        double deltayR = ry - ((picture.getRGB(x, y - 1) >> 16) & 0xFF);
+        double deltayG = gy - ((picture.getRGB(x, y - 1) >> 8) & 0xFF);
+        double deltayB = by - (picture.getRGB(x, y - 1) & 0xFF);
 
-        int deltayR = ((ry >> 16) & 0xFF) - r;
-        int deltayG = ((gy >> 8) & 0xFF) - g;
-        int deltayB = (by & 0xFF) - b;
+        double deltaySquared = deltayR * deltayR + deltayG * deltayG + deltayB * deltayB;
 
-        int deltaySquared = deltayR * deltayR + deltayG * deltayG + deltayB * deltayB;
+        double energy = Math.sqrt(deltaxSquared + deltaySquared);
 
-        return Math.sqrt(deltaxSquared + deltaySquared);
+        return Math.round(energy * 100.0) / 100.0; // 保留两位小数
     }
+
 
 
     // sequence of indices for horizontal seam

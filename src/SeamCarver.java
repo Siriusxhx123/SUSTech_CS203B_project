@@ -74,8 +74,7 @@ public class SeamCarver {
             temp1[j]=1000;
             for(int i=0;i<H;i++)
             {
-                if (energy[i][j] != 3000)  energy[i][j]=energy(i,j);
-                System.out.println(energy[i][j]);
+                energy[i][j]=energy(i,j);
             }
         }
         for(int i=1;i<H;i++)
@@ -114,6 +113,17 @@ public class SeamCarver {
         for(int i=H-2;i>=0;i--)
         {
             out[i]=res[i+1][out[i+1]];
+        }
+
+        for (int i = 0; i < H; i++) {
+            if (AddDemo.finalImageIsSeam[out[i]][i]) {
+                energy[i][out[i]] = 3000;
+            }
+        }
+
+        for (int i = 0; i < H; i++) {
+            AddDemo.finalImageIsSeam[out[i]][i] = true;
+            AddDemo.finalImageIsSeam[out[i]+1][i] = true;
         }
 
         return out;
@@ -174,6 +184,20 @@ public class SeamCarver {
         {
             out[i]=res[i+1][out[i+1]];
         }
+
+        for(int j = 0; j < H; j++)
+        {
+            if(AddDemo.middleImageIsSeam[j][out[j]]  )
+            {
+                energy[j][out[j]] = 3000;
+            }
+        }
+        for(int j = 0; j < H; j++)
+        {
+            AddDemo.middleImageIsSeam[j][out[j]] = true;
+            AddDemo.middleImageIsSeam[j][out[j]+1] = true;
+        }
+
         return out;
     }
 
@@ -224,207 +248,73 @@ public class SeamCarver {
         picture = newPicture;
     }
 
-
-//    public int[][] findMultipleHorizontalSeams(int k) {
-//        int W = picture.height();
-//        int H = picture.width();
-//        double[][] energy = new double[H][W];
-//        for (int i = 0; i < H; i++) {
-//            for (int j = 0; j < W; j++) {
-//                energy[i][j] = energy(i, j);
-//            }
-//        }
-//
-//        int[][] seams = new int[k][H];
-//
-//        for (int s = 0; s < k; s++) {
-////            double[][] distTo = new double[H][W];
-//            int[][] edgeTo = new int[H][W];
-//            double[] temp1 = new double[W];
-//            double[] temp2 = new double[W];
-//
-//            for (int j = 0; j < W; j++) {
-//                temp1[j] = energy[0][j];
-//            }
-//
-//            for (int i = 1; i < H; i++) {
-//                for (int j = 0; j < W; j++) {
-//                    int o = j;
-//                    double min = temp1[j];
-//                    if (j + 1 < W && temp1[j + 1] < min) {
-//                        min = temp1[j + 1];
-//                        o = j + 1;
-//                    }
-//                    if (j > 0 && temp1[j - 1] <= min) {
-//                        min = temp1[j - 1];
-//                        o = j - 1;
-//                    }
-//                    temp2[j] = energy[i][j] + min;
-//                    edgeTo[i][j] = o;
-//                }
-//                System.arraycopy(temp2, 0, temp1, 0, W);
-//            }
-//
-//            int minEndCol = 0;
-//            double minEnergy = temp1[0];
-//            for (int j = 1; j < W; j++) {
-//                if (temp1[j] < minEnergy) {
-//                    minEnergy = temp1[j];
-//                    minEndCol = j;
-//                }
-//            }
-//
-//            int[] seam = new int[H];
-//            int col = minEndCol;
-//            for (int i = H - 1; i >= 0; i--) {
-//                seam[i] = col;
-//                col = edgeTo[i][col];
-//            }
-//
-//            seams[s] = seam;
-//
-//            for (int i = 0; i < H; i++) {
-//                energy[i][seam[i]] = Double.MAX_VALUE / 2;
-//            }
-//        }
-//
-//        return seams;
-//    }
-
-
-
-    public int[][] findMultipleVerticalSeams(int k) {
-        int W = picture.width();
-        int H = picture.height();
-        double[][] energy = new double[H][W];
-        for (int i = 0; i < H; i++) {
-            for (int j = 0; j < W; j++) {
-                energy[i][j] = energy(j, i);
-            }
-        }
-
-        int[][] seams = new int[k][H];
-
-        for (int s = 0; s < k; s++) {
-//            double[][] distTo = new double[H][W];
-            int[][] edgeTo = new int[H][W];
-            double[] temp1 = new double[W];
-            double[] temp2 = new double[W];
-
-            for (int j = 0; j < W; j++) {
-                temp1[j] = energy[0][j];
-            }
-
-            for (int i = 1; i < H; i++) {
-                for (int j = 0; j < W; j++) {
-                    int o = j;
-                    double min = temp1[j];
-                    if (j + 1 < W && temp1[j + 1] < min) {
-                        min = temp1[j + 1];
-                        o = j + 1;
-                    }
-                    if (j > 0 && temp1[j - 1] <= min) {
-                        min = temp1[j - 1];
-                        o = j - 1;
-                    }
-                    temp2[j] = energy[i][j] + min;
-                    edgeTo[i][j] = o;
-                }
-                System.arraycopy(temp2, 0, temp1, 0, W);
-            }
-
-            int minEndCol = 0;
-            double minEnergy = temp1[0];
-            for (int j = 1; j < W; j++) {
-                if (temp1[j] < minEnergy) {
-                    minEnergy = temp1[j];
-                    minEndCol = j;
-                }
-            }
-
-            int[] seam = new int[H];
-            int col = minEndCol;
-            for (int i = H - 1; i >= 0; i--) {
-                seam[i] = col;
-                col = edgeTo[i][col];
-            }
-
-            seams[s] = seam;
-
-            for (int i = 0; i < H; i++) {
-                energy[i][seam[i]] = Double.MAX_VALUE / 2;
-            }
-        }
-
-        return seams;
-    }
-
-    public Picture addHorizontalSeams(Picture picture, int[] seam) {
+    public Picture addHorizontalSeam(Picture picture, int[] seam) {
         int width = picture.width();
         int height = picture.height();
 
         Picture expandedPicture = new Picture(width, height + 1);
 
-        for (int row = 0; row < height; row++) {
-            for (int col = 0; col < width; col++) {
+        for (int col = 0; col < width; col++) {
+            int originalRow = 0;
+            for (int row = 0; row < height + 1; row++) {
                 if (row < seam[col]) {
-                    expandedPicture.set(col, row, picture.get(col, row));
+                    expandedPicture.set(col, row, picture.get(col, originalRow));
+                    originalRow++;
                 } else if (row == seam[col]) {
-                    Color currentColor = picture.get(col, row);
-                    Color nextColor = (row + 1 < height) ? picture.get(col, row + 1) : currentColor;
+                    Color currentColor = picture.get(col, originalRow);
+                    Color nextColor = (originalRow + 1 < height) ? picture.get(col, originalRow + 1) : currentColor;
                     Color averageColor = new Color(
-//                            (currentColor.getRed() + nextColor.getRed()) / 2,
-//                            (currentColor.getGreen() + nextColor.getGreen()) / 2,
-//                            (currentColor.getBlue() + nextColor.getBlue()) / 2);
-                            255,192,203);
+                            (currentColor.getRed() + nextColor.getRed()) / 2,
+                            (currentColor.getGreen() + nextColor.getGreen()) / 2,
+                            (currentColor.getBlue() + nextColor.getBlue()) / 2
+                    );
+                    expandedPicture.set(col, row, currentColor);
+                    row++;
                     expandedPicture.set(col, row, averageColor);
+                    originalRow++;
                 } else {
-                    expandedPicture.set(col, row + 1, picture.get(col, row));
+                    expandedPicture.set(col, row, picture.get(col, originalRow));
+                    originalRow++;
                 }
             }
         }
         return expandedPicture;
     }
 
-    public Picture addVerticalSeams(Picture picture, int[][] seams) {
+
+    public Picture addVerticalSeam(Picture picture, int[] seam) {
         int width = picture.width();
         int height = picture.height();
-        int numSeams = seams.length;
-        Picture expandedPicture = new Picture(width + numSeams, height);
+
+        Picture expandedPicture = new Picture(width + 1, height);
 
         for (int row = 0; row < height; row++) {
             int originalCol = 0;
-            for (int col = 0; col < width + numSeams; col++) {
-                boolean isSeamCol = false;
-                for (int i = 0; i < numSeams; i++) {
-                    int seamCol = seams[i][row];
-                    if (col - i == seamCol) {
-                        Color currentColor = picture.get(originalCol, row);
-                        Color nextColor = (originalCol + 1 < width) ? picture.get(originalCol + 1, row) : currentColor;
-                        Color averageColor = new Color(
-                                (currentColor.getRed() + nextColor.getRed()) / 2,
-                                (currentColor.getGreen() + nextColor.getGreen()) / 2,
-                                (currentColor.getBlue() + nextColor.getBlue()) / 2
-                        );
-                        expandedPicture.set(col, row, averageColor);
-                        isSeamCol = true;
-                        break;
-                    }
-                }
-                if (!isSeamCol) {
-                    if (originalCol < width-1) {
-                        expandedPicture.set(col, row, picture.get(originalCol, row));
-                        originalCol++;
-                    } else {
-                        // Handle case where originalCol exceeds width
-                        expandedPicture.set(col, row, picture.get(width - 1, row));
-                    }
+            for (int col = 0; col < width + 1; col++) {
+                if (col < seam[row]) {
+                    expandedPicture.set(col, row, picture.get(originalCol, row));
+                    originalCol++;
+                } else if (col == seam[row]) {
+                    Color currentColor = picture.get(originalCol, row);
+                    Color nextColor = (originalCol + 1 < width) ? picture.get(originalCol + 1, row) : currentColor;
+                    Color averageColor = new Color(
+                            (currentColor.getRed() + nextColor.getRed()) / 2,
+                            (currentColor.getGreen() + nextColor.getGreen()) / 2,
+                            (currentColor.getBlue() + nextColor.getBlue()) / 2
+                    );
+                    expandedPicture.set(col, row, currentColor);
+                    col++;
+                    expandedPicture.set(col, row, averageColor);
+                    originalCol++;
+                } else {
+                    expandedPicture.set(col, row, picture.get(originalCol, row));
+                    originalCol++;
                 }
             }
         }
-
         return expandedPicture;
     }
 
-        //  unit testing (optional)
+
+    //  unit testing (optional)
 }

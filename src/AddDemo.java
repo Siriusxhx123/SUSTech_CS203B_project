@@ -3,8 +3,10 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class AddDemo {
 
-    public static boolean[][] middleImageIsSeam;
-    public static boolean[][] finalImageIsSeam;
+//    public static boolean[][] middleImageIsSeam;
+//    public static boolean[][] finalImageIsSeam;
+    public static double[][] energyMatrix;
+
 
     public static void main(String[] args) {
 //        if (args.length != 3) {
@@ -12,15 +14,16 @@ public class AddDemo {
 //            return;
 //        }
 
-        Picture inputImg = new Picture("路飞头像.jpg");
+        Picture inputImg = new Picture("logo.png");
         int addColumns = 0;
-        int addRows = 200;
+        int addRows = 100;
 
         StdOut.printf("Original image size: %d columns by %d rows\n", inputImg.width(), inputImg.height());
 
         Picture finalImage = inputImg;
 
-        middleImageIsSeam = new boolean[finalImage.height()][finalImage.width()];
+
+//        middleImageIsSeam = new boolean[finalImage.height()][finalImage.width()];
 
         for (int i = 0; i < addColumns; i++) {
             SeamCarver scForVertical = new SeamCarver(finalImage);
@@ -28,10 +31,13 @@ public class AddDemo {
             finalImage = scForVertical.addVerticalSeam(finalImage, verticalSeam);
         }
 
-        finalImageIsSeam = new boolean[finalImage.height()][finalImage.width()];
+
 
         for (int i = 0; i < addRows; i++) {
             SeamCarver scForHorizontal = new SeamCarver(finalImage);
+
+            energyMatrix = new double[finalImage.height()][finalImage.width()];
+            energyMatrix = scForHorizontal.calculateEnergyMatrix(finalImage);
             int[] horizontalSeam = scForHorizontal.findHorizontalSeam();
             finalImage = scForHorizontal.addHorizontalSeam(finalImage, horizontalSeam);
         }

@@ -26,6 +26,22 @@ public class SeamCarver {
         return picture.height();
     }
 
+    public static int[][] seamMatrix = new int[0][];
+
+    public static int[][] addRow(int[][] original, int[] newRow) {
+        // Create a new array with an additional row
+        int[][] newArray = new int[original.length + 1][];
+
+        // Copy existing rows to the new array
+        for (int i = 0; i < original.length; i++) {
+            newArray[i] = original[i];
+        }
+
+        // Add the new row
+        newArray[original.length] = newRow;
+
+        return newArray;
+    }
 
     // energy of pixel at column x and row y
     public double energy(int x, int y) {
@@ -58,9 +74,24 @@ public class SeamCarver {
         return Math.round(energy * 100.0) / 100.0; 
     }
 
+    public double[][] calculateEnergyMatrix(Picture picture)
+    {
+        int H=picture.height();
+        int W=picture.width();
+        double[][] en = new double[H][W];
+        for(int i=0;i<H;i++)
+        {
+            for(int j=0;j<W;j++)
+            {
+                en[i][j]=energy(j,i);
+            }
+        }
+        return en;
+    }
 
 
-    // sequence of indices for horizontal seam
+
+//     sequence of indices for horizontal seam
     public int[] findHorizontalSeam()
     {
         int W=picture.height();
@@ -72,11 +103,24 @@ public class SeamCarver {
         for(int j=0;j<W;j++)
         {
             temp1[j]=1000;
-            for(int i=0;i<H;i++)
-            {
-                energy[i][j]=energy(i,j);
+        }
+
+        for (int i = 0; i < seamMatrix.length; i++) {
+            for (int j = 0; j < H; j++) {
+                AddDemo.energyMatrix[seamMatrix[i][j]][j] = 3000;
+//                if (seamMatrix[i][j]<W-1)
+                AddDemo.energyMatrix[seamMatrix[i][j]+1][j] = 3000;
             }
         }
+
+        for(int j=0;j<W;j++)
+        {
+            for(int i=0;i<H;i++)
+            {
+                energy[i][j]=AddDemo.energyMatrix[j][i];
+            }
+        }
+
         for(int i=1;i<H;i++)
         {
             for(int j=0;j<W;j++)
@@ -115,20 +159,96 @@ public class SeamCarver {
             out[i]=res[i+1][out[i+1]];
         }
 
-        for (int i = 0; i < H; i++) {
-            if (AddDemo.finalImageIsSeam[out[i]][i]) {
-                energy[i][out[i]] = 3000;
-            }
-        }
+        seamMatrix = addRow(seamMatrix,out);
 
-        for (int i = 0; i < H; i++) {
-            AddDemo.finalImageIsSeam[out[i]][i] = true;
-            AddDemo.finalImageIsSeam[out[i]+1][i] = true;
-        }
+//        for (int i = 0; i < H; i++) {
+//            if (AddDemo.finalImageIsSeam[out[i]][i]) {
+//                energy[i][out[i]] = 3000;
+//            }
+//        }
+//
+////        for (int i = 0; i < H; i++) {
+////            System.out.print(energy[i][out[i]]+" ");
+////        }
+//
+//        for (int i = 0; i < H; i++) {
+//            AddDemo.finalImageIsSeam[out[i]][i] = true;
+//            AddDemo.finalImageIsSeam[out[i]+1][i] = true;
+//        }
+
+//        for (int i = 0; i < H; i++) {
+//            System.out.print(AddDemo.finalImageIsSeam[out[i]][i]+" ");
+//        }
 
         return out;
 
     }
+
+//    public int[] findHorizontalSeam() {
+//        int W = picture.height();
+//        int H = picture.width();
+//        double[][] energy = new double[H][W];
+//        int[][] res = new int[H][W];
+//        double[] temp1 = new double[W];
+//        double[] temp2 = new double[W];
+//
+//        for (int j = 0; j < W; j++) {
+//            temp1[j] = 1000;
+//            for (int i = 0; i < H; i++) {
+//                energy[i][j] = energy(i, j);
+//            }
+//        }
+//
+//        for (int i = 1; i < H; i++) {
+//            for (int j = 0; j < W; j++) {
+//                int o = j;
+//                double min = temp1[j];
+//                if (j + 1 < W && temp1[j + 1] < min) {
+//                    min = temp1[j + 1];
+//                    o = j + 1;
+//                }
+//                if (j > 0 && temp1[j - 1] <= min) {
+//                    min = temp1[j - 1];
+//                    o = j - 1;
+//                }
+//                temp2[j] = energy[i][j] + min;
+//                res[i][j] = o;
+//            }
+//            System.arraycopy(temp2, 0, temp1, 0, W);
+//        }
+//
+//        int oo = 0;
+//        double mm = temp1[0];
+//        for (int i = 1; i < W; i++) {
+//            if (temp1[i] < mm) {
+//                mm = temp1[i];
+//                oo = i;
+//            }
+//        }
+//
+//        int[] out = new int[H];
+//        out[H - 1] = oo;
+//        for (int i = H - 2; i >= 0; i--) {
+//            out[i] = res[i + 1][out[i + 1]];
+//        }
+//
+//        // 使用AddDemo.finalImageIsSeam
+//        for (int i = 0; i < H; i++) {
+//            if (AddDemo.finalImageIsSeam[out[i]][i]) {
+//                for (int j = 0; j < W; j++) {
+//                    energy[j][i] = 3000;
+//                }
+//            }
+//        }
+//
+//        // 更新AddDemo.finalImageIsSeam数组
+//        for (int i = 0; i < H; i++) {
+//            AddDemo.finalImageIsSeam[out[i]][i] = true;
+//        }
+//
+//        return out;
+//    }
+
 
     // sequence of indices for vertical seam
     public int[] findVerticalSeam()
@@ -185,18 +305,18 @@ public class SeamCarver {
             out[i]=res[i+1][out[i+1]];
         }
 
-        for(int j = 0; j < H; j++)
-        {
-            if(AddDemo.middleImageIsSeam[j][out[j]]  )
-            {
-                energy[j][out[j]] = 3000;
-            }
-        }
-        for(int j = 0; j < H; j++)
-        {
-            AddDemo.middleImageIsSeam[j][out[j]] = true;
-            AddDemo.middleImageIsSeam[j][out[j]+1] = true;
-        }
+//        for(int j = 0; j < H; j++)
+//        {
+//            if(AddDemo.middleImageIsSeam[j][out[j]]  )
+//            {
+//                energy[j][out[j]] = 3000;
+//            }
+//        }
+//        for(int j = 0; j < H; j++)
+//        {
+//            AddDemo.middleImageIsSeam[j][out[j]] = true;
+//            AddDemo.middleImageIsSeam[j][out[j]+1] = true;
+//        }
 
         return out;
     }
@@ -267,6 +387,7 @@ public class SeamCarver {
                             (currentColor.getRed() + nextColor.getRed()) / 2,
                             (currentColor.getGreen() + nextColor.getGreen()) / 2,
                             (currentColor.getBlue() + nextColor.getBlue()) / 2
+//                            255,103,102
                     );
                     expandedPicture.set(col, row, currentColor);
                     row++;

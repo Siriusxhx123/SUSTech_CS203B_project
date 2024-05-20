@@ -1,49 +1,95 @@
 import edu.princeton.cs.algs4.Picture;
 import edu.princeton.cs.algs4.StdOut;
 
-public class AddDemo {
+import java.awt.*;
 
-//    public static boolean[][] middleImageIsSeam;
-//    public static boolean[][] finalImageIsSeam;
+public class AddDemo {
     public static double[][] energyMatrix;
 
-
     public static void main(String[] args) {
-//        if (args.length != 3) {
-//            StdOut.println("Usage:\njava AddDemo [image filename] [num cols to add] [num rows to add]");
-//            return;
-//        }
 
-        Picture inputImg = new Picture("logo.png");
-        int addColumns = 0;
-        int addRows = 100;
+        Picture inputImg = new Picture("路飞头像.jpg");
+        int addColumns = 50;
+        int addRows = 50;
 
         StdOut.printf("Original image size: %d columns by %d rows\n", inputImg.width(), inputImg.height());
+        inputImg.show();
 
         Picture finalImage = inputImg;
 
-
-//        middleImageIsSeam = new boolean[finalImage.height()][finalImage.width()];
-
+        //add vertical seam
         for (int i = 0; i < addColumns; i++) {
             SeamCarver scForVertical = new SeamCarver(finalImage);
+            energyMatrix = scForVertical.calculateEnergyMatrix(finalImage);
             int[] verticalSeam = scForVertical.findVerticalSeam();
             finalImage = scForVertical.addVerticalSeam(finalImage, verticalSeam);
         }
 
+        finalImage.show();
 
+        //change vertical seam
+        Picture middlePicture = finalImage;
+        Color seamColor = new Color(255, 103, 102);
+        boolean con1;
 
+        do {
+            con1 = false;
+            outerLoop:
+            for (int i = 0; i < middlePicture.height(); i++) {
+                for (int j = 0; j < middlePicture.width(); j++) {
+                    if (middlePicture.get(j, i).equals(seamColor)) {
+                        con1 = true;
+                        break outerLoop;
+                    }
+                }
+            }
+
+            if (con1) {
+                SeamCarver scForFinalImage = new SeamCarver(middlePicture);
+                middlePicture = scForFinalImage.changeVerticalSeam(middlePicture);
+            }
+
+        } while (con1);
+
+        middlePicture.show();
+        finalImage = middlePicture;
+
+        //add horizontal seam
         for (int i = 0; i < addRows; i++) {
             SeamCarver scForHorizontal = new SeamCarver(finalImage);
-
-            energyMatrix = new double[finalImage.height()][finalImage.width()];
             energyMatrix = scForHorizontal.calculateEnergyMatrix(finalImage);
             int[] horizontalSeam = scForHorizontal.findHorizontalSeam();
             finalImage = scForHorizontal.addHorizontalSeam(finalImage, horizontalSeam);
         }
 
-        StdOut.printf("New image size: %d columns by %d rows\n", finalImage.width(), finalImage.height());
-        inputImg.show();
         finalImage.show();
+
+        //change horizontal seam
+        Picture finalPicture = finalImage;
+        boolean con;
+
+        do {
+            con = false;
+            outerLoop:
+            for (int i = 0; i < finalPicture.height(); i++) {
+                for (int j = 0; j < finalPicture.width(); j++) {
+                    if (finalPicture.get(j, i).equals(seamColor)) {
+                        con = true;
+                        break outerLoop;
+                    }
+                }
+            }
+
+            if (con) {
+                SeamCarver scForFinalImage = new SeamCarver(finalPicture);
+                finalPicture = scForFinalImage.changeHorizontalSeam(finalPicture);
+            }
+
+        } while (con);
+
+
+        StdOut.printf("New image size: %d columns by %d rows\n", finalImage.width(), finalImage.height());
+
+        finalPicture.show();
     }
 }

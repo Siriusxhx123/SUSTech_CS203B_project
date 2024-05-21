@@ -4,13 +4,12 @@ import edu.princeton.cs.algs4.StdOut;
 import java.awt.*;
 
 public class AddDemo {
-    public static double[][] energyMatrix;
-
+    
     public static void main(String[] args) {
 
         Picture inputImg = new Picture("路飞头像.jpg");
         int addColumns = 50;
-        int addRows = 50;
+        int addRows = 30;
 
         StdOut.printf("Original image size: %d columns by %d rows\n", inputImg.width(), inputImg.height());
         inputImg.show();
@@ -20,7 +19,7 @@ public class AddDemo {
         //add vertical seam
         for (int i = 0; i < addColumns; i++) {
             SeamCarver scForVertical = new SeamCarver(finalImage);
-            energyMatrix = scForVertical.calculateEnergyMatrix(finalImage);
+
             int[] verticalSeam = scForVertical.findVerticalSeam();
             finalImage = scForVertical.addVerticalSeam(finalImage, verticalSeam);
         }
@@ -57,7 +56,7 @@ public class AddDemo {
         //add horizontal seam
         for (int i = 0; i < addRows; i++) {
             SeamCarver scForHorizontal = new SeamCarver(finalImage);
-            energyMatrix = scForHorizontal.calculateEnergyMatrix(finalImage);
+
             int[] horizontalSeam = scForHorizontal.findHorizontalSeam();
             finalImage = scForHorizontal.addHorizontalSeam(finalImage, horizontalSeam);
         }

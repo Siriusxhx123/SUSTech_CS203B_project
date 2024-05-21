@@ -82,7 +82,7 @@ public class SeamCarver {
         for (int j = 0; j < W; j++) {
             temp1[j] = 1000;
             for (int i = 0; i < H; i++) {
-                energy[i][j] = AddDemo.energyMatrix[j][i];
+                energy[i][j] = energy(i,j);
             }
         }
 
@@ -133,7 +133,7 @@ public class SeamCarver {
         for (int j = 0; j < W; j++) {
             temp1[j] = 1000;
             for (int i = 0; i < H; i++) {
-                energy[i][j] = AddDemo.energyMatrix[i][j];
+                energy[i][j] = energy(j,i);
             }
         }
         for (int i = 1; i < H; i++) {

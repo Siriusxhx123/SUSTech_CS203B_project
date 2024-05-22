@@ -4,12 +4,12 @@ import edu.princeton.cs.algs4.StdOut;
 import java.awt.*;
 
 public class AddDemo {
-    
+
     public static void main(String[] args) {
 
         Picture inputImg = new Picture("路飞头像.jpg");
         int addColumns = 50;
-        int addRows = 30;
+        int addRows = 100;
 
         StdOut.printf("Original image size: %d columns by %d rows\n", inputImg.width(), inputImg.height());
         inputImg.show();

@@ -59,17 +59,7 @@ public class SeamCarver {
         return Math.round(energy * 100.0) / 100.0;
     }
 
-    public double[][] calculateEnergyMatrix(Picture picture) {
-        int H = picture.height();
-        int W = picture.width();
-        double[][] en = new double[H][W];
-        for (int i = 0; i < H; i++) {
-            for (int j = 0; j < W; j++) {
-                en[i][j] = energy(j, i);
-            }
-        }
-        return en;
-    }
+
 
     //sequence of indices for horizontal seam
     public int[] findHorizontalSeam() {
